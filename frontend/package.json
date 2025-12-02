@@ -4,19 +4,14 @@
   "private": true,
   "description": "Real-time on-chain Tic-Tac-Toe powered by Linera microchains ⚡",
   "author": "Girum",
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "next": "latest",
-    "react": "latest",
-    "react-dom": "latest"
-  },
-  "devDependencies": {
-    "eslint": "latest",
-    "eslint-config-next": "latest"
-  }
+ "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  }
 }
