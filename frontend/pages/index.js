@@ -355,6 +355,21 @@ export default function Home() {
         Built live for Linera Buildathon ⚡<br />
         Play vs friend (share screen)
       </p>
+
+     <p style={{
+        marginTop: '40px',
+        fontSize: '1rem',
+        opacity: 0.6
+        }}>
+      Built by <strong>Girum</strong> • 
+    <a 
+    href="https://discord.com/users/1220659612580184164" 
+    target="_blank" 
+    style={{ color: '#00ffea', textDecoration: 'none', marginLeft: '6px' }}
+  >
+    Contact on Discord
+  </a>
+</p>
     </div>
   )
 }
