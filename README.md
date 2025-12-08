@@ -5,7 +5,7 @@
 Live playable demo → **https://instanttactoe.vercel.app**
 Source Code → **https://github.com/girume1/instanttactoe**
 
-[![Buildathon Wave 4+](https://img.shields.io/badge/Buildathon-Wave%202%2B-success)](https://linera.io/buildathon)
+[![Buildathon Wave 4+](https://img.shields.io/badge/Buildathon-Wave%204%2B-success)](https://linera.io/buildathon)
 
 ---
 
@@ -18,6 +18,12 @@ Source Code → **https://github.com/girume1/instanttactoe**
 * **Neon Cyberpunk UI:** Engaging dark theme with color-coded players and a win celebration effect.
 * **Pure On-Chain Feel:** No oracles, no centralized server—truly decentralized UX proof-of-concept.
 
+---
+## ⚠️ Recommended Playing Mode
+
+For the best experience:
+* **Use a PC or Laptop.**
+* If you are on a **phone or tablet**, please select your browser's **"Desktop Site"** or **"Desktop Mode"** option to ensure accurate click detection and board scaling.
 ---
 
 ## 🚀 Getting Started (Run Locally)
