@@ -1,45 +1,34 @@
 use linera_sdk::{Contract, ContractRuntime, View};
 
-// Board state as a 9-cell array
-pub struct TicTacToeView {
+pub struct BoardView {
     board: [char; 9],
-    current_player: char, // 'X' or 'O'
+    player: char,
 }
 
-impl View for TicTacToeView {
+impl View for BoardView {
     type Error = String;
 }
 
 #[derive(linera_sdk::ContractState)]
-pub struct TicTacToeContract {
-    board: TicTacToeView,
+pub struct Game {
+    board: BoardView,
 }
 
-impl Contract for TicTacToeContract {
+impl Contract for Game {
     type Event = Event;
     type Parameters = ();
 
     fn load(runtime: &ContractRuntime<Self>) -> Self {
-        Self {
-            board: TicTacToeView::load(runtime),
-        }
+        Self { board: BoardView::load(runtime) }
     }
 
-    fn ready(&self) -> bool {
-        true
-    }
-
-    fn handle_event(runtime: &ContractRuntime<Self>, event: Event) -> Result<(), Self::Error> {
+    fn handle_event(&mut self, runtime: &ContractRuntime<Self>, event: Event) -> Result<(), Self::Error> {
         match event {
-            Event::MakeMove(pos) => {
-                let board_state = self.board.board.get();
-                if board_state[pos as usize] != '\0' {
-                    return Err("Cell already taken".to_string());
-                }
-                let player = self.board.current_player.get();
-                self.board.board.set([/* update array with player at pos */]);
-                self.board.current_player.set(if player == 'X' { 'O' } else { 'X' });
-                // Check winner logic here (simplified)
+            Event::Move(pos) => {
+                let b = self.board.board.get_mut();
+                if b[pos as usize] != '\0' { return Err("Taken".to_string()); }
+                b[pos as usize] = self.board.player.get();
+                self.board.player.set(if self.board.player.get() == 'X' { 'O' } else { 'X' });
                 Ok(())
             }
         }
@@ -48,5 +37,5 @@ impl Contract for TicTacToeContract {
 
 #[derive(serde::Serialize, serde::Deserialize)]
 pub enum Event {
-    MakeMove(u8), // Position 0-8
+    Move(u8),
 }
