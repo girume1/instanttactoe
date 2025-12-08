@@ -13,6 +13,30 @@ const StatBox = ({ label, value, color }) => (
   </div>
 )
 
+// Helper component to render a single leaderboard card
+const LeaderboardCard = ({ player, stats, color }) => (
+  <div style={{
+    padding: '20px',
+    border: '1px solid rgba(255,255,255,0.1)',
+    borderRadius: '12px',
+    maxWidth: '400px',
+    background: 'rgba(0,0,0,0.5)'
+  }}>
+    <h3 style={{ margin: '0 0 15px', fontSize: '1.8rem', color: color }}>
+      🏆 Leaderboard (Player {player})
+    </h3>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+      <StatBox label="Wins" value={stats.wins} color={color} />
+      <StatBox label="Losses" value={stats.losses} color={color === '#ff4757' ? '#3742fa' : '#ff4757'} />
+      <StatBox label="Ties" value={stats.ties} color="#ffa502" />
+      <StatBox label="Win Rate" value={stats.winRate} color="#00ffea" />
+    </div>
+    <p style={{ marginTop: '15px', fontSize: '1rem', opacity: 0.8 }}>
+      Total Games: {stats.totalGames}
+    </p>
+  </div>
+);
+
 const initialStats = {
   wins: 0,
   losses: 0,
@@ -34,7 +58,7 @@ export default function Home() {
 
   // ────────────────────── LEADERBOARD STATES ──────────────────────
   const [leaderboardX, setLeaderboardX] = useState(initialStats)
-  const [leaderboardO, setLeaderboardO] = useState(initialStats) // New state for Player O
+  const [leaderboardO, setLeaderboardO] = useState(initialStats) 
   // ──────────────────────────────────────────────────────────────
 
   // ────────────────────── LEADERBOARD EFFECTS ──────────────────────
@@ -42,9 +66,9 @@ export default function Home() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedX = localStorage.getItem('tictactoe-leaderboard-X')
-      const savedO = localStorage.getItem('tictactoe-leaderboard-O') // Load O stats
+      const savedO = localStorage.getItem('tictactoe-leaderboard-O') 
       if (savedX) setLeaderboardX(JSON.parse(savedX))
-      if (savedO) setLeaderboardO(JSON.parse(savedO)) // Set O stats
+      if (savedO) setLeaderboardO(JSON.parse(savedO)) 
     }
   }, [])
 
@@ -52,7 +76,7 @@ export default function Home() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('tictactoe-leaderboard-X', JSON.stringify(leaderboardX))
-      localStorage.setItem('tictactoe-leaderboard-O', JSON.stringify(leaderboardO)) // Save O stats
+      localStorage.setItem('tictactoe-leaderboard-O', JSON.stringify(leaderboardO))
     }
   }, [leaderboardX, leaderboardO])
 
@@ -67,14 +91,14 @@ export default function Home() {
         let ties = prev.ties
 
         if (winner === 'X') wins++
-        else if (winner === 'O') losses++ // O win is X loss
+        else if (winner === 'O') losses++ 
         else ties++
 
         const winRate = total > 0 ? ((wins / total) * 100).toFixed(1) + '%' : '0%'
         return { wins, losses, ties, totalGames: total, winRate }
       })
 
-      // Update O's stats (O wins are tracked as O's wins, X wins as O's losses)
+      // Update O's stats
       setLeaderboardO(prev => {
         const total = prev.totalGames + 1
         let wins = prev.wins
@@ -82,7 +106,7 @@ export default function Home() {
         let ties = prev.ties
 
         if (winner === 'O') wins++
-        else if (winner === 'X') losses++ // X win is O loss
+        else if (winner === 'X') losses++
         else ties++
 
         const winRate = total > 0 ? ((wins / total) * 100).toFixed(1) + '%' : '0%'
@@ -122,6 +146,7 @@ export default function Home() {
     const playerMark = currentPlayer;
     const nextPlayer = currentPlayer === 'X' ? 'O' : 'X';
 
+    // Fake "microchain finality" delay <100ms
     setTimeout(() => {
       let newBoard = [...board]
       newBoard[index] = playerMark
@@ -132,6 +157,7 @@ export default function Home() {
       setMoveCount(moveCount + 1)
       setWinner(win)
       
+      // Only switch player if the game didn't end
       if (!win) {
         setCurrentPlayer(nextPlayer)
       }
@@ -167,6 +193,31 @@ export default function Home() {
       }}>
         ⚡ InstantTacToe
       </h1>
+      
+      {/* ────────────────────── ADDED LINERA LOGO WITH ANIMATION ────────────────────── */}
+      <div style={{margin:'40px auto 20px'}}>
+        <img 
+          // NOTE: I am using a placeholder path /linera-logo.png. 
+          // Ensure you save the image to your /public folder!
+          src="/linera-logo.png" 
+          alt="Linera Buildathon" 
+          style={{
+            width: '140px',
+            height: '140px',
+            filter: 'drop-shadow(0 0 40px #00ffea) brightness(1.1)',
+            animation: 'pulse 4s infinite'
+          }}
+        />
+      </div>
+      {/* ADDED CSS STYLES FOR ANIMATION (using styled-jsx, or put in global CSS) */}
+      <style jsx>{`
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.08); }
+        }
+      `}</style>
+      {/* ──────────────────────────────────────────────────────────────────────────── */}
+      
       <p style={{ fontSize: '1.8rem', margin: '0 0 30px', opacity: 0.9 }}>
         Real-time on-chain Tic-Tac-Toe<br />
         <span style={{ color: '#00ffea', fontSize: '1.2rem' }}>
@@ -276,10 +327,7 @@ export default function Home() {
         margin: '30px auto',
         maxWidth: '900px'
       }}>
-        {/* Leaderboard for Player X */}
         <LeaderboardCard player="X" stats={leaderboardX} color="#ff4757" />
-
-        {/* Leaderboard for Player O */}
         <LeaderboardCard player="O" stats={leaderboardO} color="#3742fa" />
       </div>
 
@@ -312,27 +360,3 @@ export default function Home() {
     </div>
   )
 }
-
-// New component to render a single leaderboard card
-const LeaderboardCard = ({ player, stats, color }) => (
-  <div style={{
-    padding: '20px',
-    border: '1px solid rgba(255,255,255,0.1)',
-    borderRadius: '12px',
-    maxWidth: '400px',
-    background: 'rgba(0,0,0,0.5)'
-  }}>
-    <h3 style={{ margin: '0 0 15px', fontSize: '1.8rem', color: color }}>
-      🏆 Leaderboard (Player {player})
-    </h3>
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
-      <StatBox label="Wins" value={stats.wins} color={color} />
-      <StatBox label="Losses" value={stats.losses} color={color === '#ff4757' ? '#3742fa' : '#ff4757'} />
-      <StatBox label="Ties" value={stats.ties} color="#ffa502" />
-      <StatBox label="Win Rate" value={stats.winRate} color="#00ffea" />
-    </div>
-    <p style={{ marginTop: '15px', fontSize: '1rem', opacity: 0.8 }}>
-      Total Games: {stats.totalGames}
-    </p>
-  </div>
-);
