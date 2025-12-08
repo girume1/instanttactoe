@@ -172,8 +172,8 @@ export default function Home() {
         fontStyle: 'italic'
       }}>
         Built live for Linera Buildathon ⚡<br />
-        Play vs friend (share screen)
+        Play vs friend (share screen) or AI-style turns
       </p>
     </div>
   )
-              }
+                     }
