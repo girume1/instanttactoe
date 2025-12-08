@@ -1,29 +1,11 @@
 import { useState, useCallback, useEffect } from 'react'
 
-// Helper component for Leaderboard stats (kept outside Home)
-const StatBox = ({ label, value, color }) => (
-  <div style={{
-    padding: '8px',
-    border: `1px solid ${color}80`,
-    borderRadius: '8px',
-    backgroundColor: `${color}10`
-  }}>
-    <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color }}>{value}</div>
-    <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>{label}</div>
-  </div>
-)
-
 export default function Home() {
   const [board, setBoard] = useState(Array(9).fill(''))
   const [currentPlayer, setCurrentPlayer] = useState('X')
   const [winner, setWinner] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [moveCount, setMoveCount] = useState(0)
-
-  // ────────────────────── AI vs PLAYER CODE ──────────────────────
-  const [mode, setMode] = useState('ai') // 'ai' or 'pvp'
-  const [aiLevel, setAiLevel] = useState('extreme') // 'easy', 'hard', 'extreme'
-  // ─────────────────────────────────────────────────────────────
 
   // ────────────────────── LEADERBOARD CODE ──────────────────────
   const [leaderboard, setLeaderboard] = useState({
@@ -36,6 +18,7 @@ export default function Home() {
 
   // Load from localStorage on mount
   useEffect(() => {
+    // Check for window to ensure code only runs client-side
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('tictactoe-leaderboard')
       if (saved) setLeaderboard(JSON.parse(saved))
@@ -54,11 +37,11 @@ export default function Home() {
     if (winner) {
       setLeaderboard(prev => {
         const total = prev.totalGames + 1
-        let wins = prev.wins
-        let losses = prev.losses
+        let wins = prev.X Wins
+        let losses = prev.O Wins
         let ties = prev.ties
 
-        // X is always the Player, O is always the AI/Opponent
+        // Assuming the user playing is 'X' and 'O' is the opponent.
         if (winner === 'X') wins++
         else if (winner === 'O') losses++
         else ties++
@@ -92,121 +75,21 @@ export default function Home() {
     return newBoard.every(cell => cell) ? 'Tie!' : null
   }, [])
 
-  // ────────────────────── AI LOGIC FUNCTIONS ──────────────────────
-
-  // Random move for Easy AI
-  const getRandomMove = useCallback(() => {
-    const empty = board.map((v, i) => v === '' ? i : null).filter(v => v !== null)
-    return empty[Math.floor(Math.random() * empty.length)]
-  }, [board])
-
-  // Unbeatable Minimax AI (Hard & Extreme) - Uses an immutable copy
-  const minimax = useCallback((testBoard, depth, isMax) => {
-    const result = checkWinner(testBoard)
-    if (result === 'O') return 10 - depth
-    if (result === 'X') return depth - 10
-    if (result === 'Tie!') return 0
-
-    const empty = testBoard.map((v, i) => v === '' ? i : null).filter(v => v !== null)
-    if (isMax) {
-      let best = -1000
-      for (let i of empty) {
-        testBoard[i] = 'O'
-        best = Math.max(best, minimax(testBoard, depth + 1, false))
-        testBoard[i] = ''
-      }
-      return best
-    } else {
-      let best = 1000
-      for (let i of empty) {
-        testBoard[i] = 'X'
-        best = Math.min(best, minimax(testBoard, depth + 1, true))
-        testBoard[i] = ''
-      }
-      return best
-    }
-  }, [checkWinner])
-
-  const getBestMove = useCallback(() => {
-    let bestScore = -1000
-    let move = 0
-    // We need a temporary mutable board for minimax
-    const tempBoard = [...board]
-
-    for (let i = 0; i < 9; i++) {
-      if (tempBoard[i] === '') {
-        tempBoard[i] = 'O'
-        // AI is 'O' (Maximizer), next is 'X' (Minimizer)
-        let score = minimax(tempBoard, 0, false)
-        tempBoard[i] = ''
-        if (score > bestScore) {
-          bestScore = score
-          move = i
-        }
-      }
-    }
-    return move
-  }, [board, minimax])
-  // ─────────────────────────────────────────────────────────────
-
-  // ────────────────────── UPDATED PLAY FUNCTION ──────────────────────
   const play = useCallback((index) => {
-    // Only allow player 'X' to move in AI mode, or current player to move in PvP mode
-    if (board[index] || winner || isLoading || (mode === 'ai' && currentPlayer === 'O')) return
+    if (board[index] || winner || isLoading) return
 
     setIsLoading(true)
-    
-    // Player 'X' move
-    const playerMark = mode === 'ai' ? 'X' : currentPlayer;
-    const nextPlayer = playerMark === 'X' ? 'O' : 'X';
-
-    // Fake "microchain finality" delay <100ms for the Player's move
-    setTimeout(() => {
-      let currentBoard = [...board]
-      currentBoard[index] = playerMark
-      
-      const playerWin = checkWinner(currentBoard)
-      if (playerWin) {
-        setBoard(currentBoard)
-        setMoveCount(moveCount + 1)
-        setWinner(playerWin)
-        setIsLoading(false)
-        return
-      }
-
-      if (mode === 'pvp') {
-        setBoard(currentBoard)
-        setMoveCount(moveCount + 1)
-        setCurrentPlayer(nextPlayer)
-        setIsLoading(false)
-      } else {
-        // AI mode: Trigger AI's turn
-        const aiDelay = aiLevel === 'easy' ? 400 : aiLevel === 'hard' ? 800 : 1200
-        
-        // AI's move logic (simulated "on-chain" processing)
-        setTimeout(() => {
-          let aiMove = 0;
-          if (aiLevel === 'easy') {
-            aiMove = getRandomMove()
-          } else if (aiLevel === 'hard') {
-            // Hard has a 10% chance of a random move to be less than extreme
-            aiMove = Math.random() < 0.1 ? getRandomMove() : getBestMove()
-          } else { // Extreme
-            aiMove = getBestMove()
-          }
-          
-          let finalBoard = [...currentBoard]
-          finalBoard[aiMove] = 'O' // AI is always 'O'
-          
-          setBoard(finalBoard)
-          setMoveCount(moveCount + 2) // Player move + AI move
-          setCurrentPlayer('X') // Always back to Player X
-          setWinner(checkWinner(finalBoard) || '')
-          setIsLoading(false)
-        }, aiDelay)
-      }
-    }, 80)
-  }, [board, winner, isLoading, moveCount, mode, aiLevel, checkWinner, getRandomMove, getBestMove, currentPlayer])
+    setTimeout(() => {  // Fake "microchain finality" delay <100ms
+      const newBoard = [...board]
+      newBoard[index] = currentPlayer
+      const win = checkWinner(newBoard)
+      setBoard(newBoard)
+      setMoveCount(moveCount + 1)
+      setWinner(win)
+      setCurrentPlayer(currentPlayer === 'X' ? 'O' : 'X')
+      setIsLoading(false)
+    }, 80)  // Sub-100ms "on-chain" feel
+  }, [board, currentPlayer, winner, isLoading, moveCount, checkWinner])
 
   const reset = () => {
     setBoard(Array(9).fill(''))
@@ -242,45 +125,6 @@ export default function Home() {
         </span>
       </p>
 
-      {/* ────────────────────── MODE SELECTION UI ────────────────────── */}
-      <div style={{marginBottom: '30px'}}>
-        <button 
-          onClick={() => {setMode(mode === 'pvp' ? 'ai' : 'pvp'); reset()}}
-          style={{
-            padding:'14px 32px',
-            margin:'0 15px',
-            background:mode==='ai'?'#00ffea':'#333',
-            color:mode==='ai'?'#000':'#fff',
-            border:'3px solid #00ffea',
-            borderRadius:'30px',
-            fontWeight:'bold',
-            cursor: 'pointer'
-          }}
-        >
-          {mode === 'ai' ? 'Play vs AI' : 'PvP (Friends)'}
-        </button>
-        {mode === 'ai' && (
-          <select 
-            value={aiLevel} 
-            onChange={e=>setAiLevel(e.target.value)}
-            style={{
-              padding:'14px 24px',
-              background:'#333',
-              color:'#fff',
-              border:'3px solid #ff00ea',
-              borderRadius:'30px',
-              cursor: 'pointer',
-              fontWeight: 'bold'
-            }}
-          >
-            <option value="easy">Easy</option>
-            <option value="hard">Hard</option>
-            <option value="extreme">Extreme (Unbeatable)</option>
-          </select>
-        )}
-      </div>
-      {/* ───────────────────────────────────────────────────────────── */}
-
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 120px)',
@@ -309,7 +153,7 @@ export default function Home() {
               fontWeight: 'bold',
               display: 'grid',
               placeItems: 'center',
-              cursor: (board[i] || winner || isLoading || (mode === 'ai' && currentPlayer === 'O')) ? 'default' : 'pointer',
+              cursor: (board[i] || winner || isLoading) ? 'default' : 'pointer',
               transition: 'all 0.2s ease',
               boxShadow: cell ? '0 0 20px rgba(255,255,255,0.5)' : 'none',
               opacity: isLoading ? 0.5 : 1
@@ -361,7 +205,7 @@ export default function Home() {
           fontWeight: 'bold',
           transition: 'all 0.3s ease',
           boxShadow: '0 10px 30px rgba(0,255,234,0.4)',
-          marginBottom: '20px'
+          marginBottom: '20px' // Added margin for separation
         }}
         onMouseOver={(e) => {
           e.target.style.transform = 'scale(1.05)'
@@ -421,8 +265,21 @@ export default function Home() {
         fontStyle: 'italic'
       }}>
         Built live for Linera Buildathon ⚡<br />
-        Play vs friend (share screen) or AI-style turns
+        Play vs friend (share screen) 
       </p>
     </div>
   )
 }
+
+// Helper component for Leaderboard stats
+const StatBox = ({ label, value, color }) => (
+  <div style={{
+    padding: '8px',
+    border: `1px solid ${color}80`,
+    borderRadius: '8px',
+    backgroundColor: `${color}10`
+  }}>
+    <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color }}>{value}</div>
+    <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>{label}</div>
+  </div>
+)
