@@ -2,7 +2,7 @@
   "name": "instanttactoe",
   "version": "1.0.0",
   "private": true,
-  "description": "Real-time on-chain Tic-Tac-Toe powered by Linera microchains ⚡",
+  "description": "Real-time on-chain Tic-Tac-Toe powered by Linera microchains",
   "author": "Girum",
   "scripts": {
     "dev": "next dev",
@@ -11,9 +11,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "next": "latest",
-    "react": "latest",
-    "react-dom": "latest"
+    "next": "14.2.15",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   },
   "devDependencies": {
     "eslint": "latest",
