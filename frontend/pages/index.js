@@ -1,5 +1,26 @@
 import { useState, useCallback, useEffect } from 'react'
 
+// Helper component for Leaderboard stats (kept outside Home)
+const StatBox = ({ label, value, color }) => (
+  <div style={{
+    padding: '8px',
+    border: `1px solid ${color}80`,
+    borderRadius: '8px',
+    backgroundColor: `${color}10`
+  }}>
+    <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color }}>{value}</div>
+    <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>{label}</div>
+  </div>
+)
+
+const initialStats = {
+  wins: 0,
+  losses: 0,
+  ties: 0,
+  totalGames: 0,
+  winRate: '0%'
+};
+
 export default function Home() {
   const [board, setBoard] = useState(Array(9).fill(''))
   const [currentPlayer, setCurrentPlayer] = useState('X')
@@ -7,58 +28,76 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false)
   const [moveCount, setMoveCount] = useState(0)
 
-  // ────────────────────── LEADERBOARD CODE ──────────────────────
-  const [leaderboard, setLeaderboard] = useState({
-    wins: 0,
-    losses: 0,
-    ties: 0,
-    totalGames: 0,
-    winRate: '0%'
-  })
+  // ────────────────────── GAME MODE (PVP) ──────────────────────
+  const mode = 'pvp'; 
+  // ─────────────────────────────────────────────────────────────
 
+  // ────────────────────── LEADERBOARD STATES ──────────────────────
+  const [leaderboardX, setLeaderboardX] = useState(initialStats)
+  const [leaderboardO, setLeaderboardO] = useState(initialStats) // New state for Player O
+  // ──────────────────────────────────────────────────────────────
+
+  // ────────────────────── LEADERBOARD EFFECTS ──────────────────────
   // Load from localStorage on mount
   useEffect(() => {
-    // Check for window to ensure code only runs client-side
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('tictactoe-leaderboard')
-      if (saved) setLeaderboard(JSON.parse(saved))
+      const savedX = localStorage.getItem('tictactoe-leaderboard-X')
+      const savedO = localStorage.getItem('tictactoe-leaderboard-O') // Load O stats
+      if (savedX) setLeaderboardX(JSON.parse(savedX))
+      if (savedO) setLeaderboardO(JSON.parse(savedO)) // Set O stats
     }
   }, [])
 
   // Save whenever stats change
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('tictactoe-leaderboard', JSON.stringify(leaderboard))
+      localStorage.setItem('tictactoe-leaderboard-X', JSON.stringify(leaderboardX))
+      localStorage.setItem('tictactoe-leaderboard-O', JSON.stringify(leaderboardO)) // Save O stats
     }
-  }, [leaderboard])
+  }, [leaderboardX, leaderboardO])
 
   // Update leaderboard when game ends
   useEffect(() => {
     if (winner) {
-      setLeaderboard(prev => {
+      // Update X's stats
+      setLeaderboardX(prev => {
         const total = prev.totalGames + 1
         let wins = prev.wins
         let losses = prev.losses
         let ties = prev.ties
 
-        // Assuming the user playing is 'X' and 'O' is the opponent.
         if (winner === 'X') wins++
-        else if (winner === 'O') losses++
+        else if (winner === 'O') losses++ // O win is X loss
         else ties++
 
         const winRate = total > 0 ? ((wins / total) * 100).toFixed(1) + '%' : '0%'
+        return { wins, losses, ties, totalGames: total, winRate }
+      })
 
+      // Update O's stats (O wins are tracked as O's wins, X wins as O's losses)
+      setLeaderboardO(prev => {
+        const total = prev.totalGames + 1
+        let wins = prev.wins
+        let losses = prev.losses
+        let ties = prev.ties
+
+        if (winner === 'O') wins++
+        else if (winner === 'X') losses++ // X win is O loss
+        else ties++
+
+        const winRate = total > 0 ? ((wins / total) * 100).toFixed(1) + '%' : '0%'
         return { wins, losses, ties, totalGames: total, winRate }
       })
     }
   }, [winner])
 
-  const resetLeaderboard = () => {
-    if (confirm('Reset all stats?')) {
-      setLeaderboard({ wins: 0, losses: 0, ties: 0, totalGames: 0, winRate: '0%' })
+  const resetLeaderboards = () => {
+    if (confirm('Reset all stats for both players?')) {
+      setLeaderboardX(initialStats)
+      setLeaderboardO(initialStats)
     }
   }
-  // ─────────────────────────────────────────────────────────────
+  // ──────────────────────────────────────────────────────────────
 
   const checkWinner = useCallback((newBoard) => {
     const lines = [
@@ -79,16 +118,26 @@ export default function Home() {
     if (board[index] || winner || isLoading) return
 
     setIsLoading(true)
-    setTimeout(() => {  // Fake "microchain finality" delay <100ms
-      const newBoard = [...board]
-      newBoard[index] = currentPlayer
+    
+    const playerMark = currentPlayer;
+    const nextPlayer = currentPlayer === 'X' ? 'O' : 'X';
+
+    setTimeout(() => {
+      let newBoard = [...board]
+      newBoard[index] = playerMark
+      
       const win = checkWinner(newBoard)
+
       setBoard(newBoard)
       setMoveCount(moveCount + 1)
       setWinner(win)
-      setCurrentPlayer(currentPlayer === 'X' ? 'O' : 'X')
+      
+      if (!win) {
+        setCurrentPlayer(nextPlayer)
+      }
       setIsLoading(false)
-    }, 80)  // Sub-100ms "on-chain" feel
+      
+    }, 80)
   }, [board, currentPlayer, winner, isLoading, moveCount, checkWinner])
 
   const reset = () => {
@@ -129,7 +178,7 @@ export default function Home() {
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 120px)',
         gap: '12px',
-        margin: '50px auto',
+        margin: '50px auto 30px',
         width: 'fit-content',
         padding: '20px',
         borderRadius: '20px',
@@ -184,7 +233,7 @@ export default function Home() {
             margin: '0 0 20px',
             textShadow: '0 0 30px currentColor'
           }}>
-            {winner === 'Tie!' ? 'It\'s a Tie!' : `${winner} Wins!`}
+            {winner === 'Tie!' ? 'Tie!' : `${winner} Wins`}
           </h2>
           <p style={{ fontSize: '1.2rem', opacity: 0.8 }}>
             {moveCount} moves • {moveCount * 80}ms total finality
@@ -205,7 +254,7 @@ export default function Home() {
           fontWeight: 'bold',
           transition: 'all 0.3s ease',
           boxShadow: '0 10px 30px rgba(0,255,234,0.4)',
-          marginBottom: '20px' // Added margin for separation
+          marginBottom: '20px'
         }}
         onMouseOver={(e) => {
           e.target.style.transform = 'scale(1.05)'
@@ -219,44 +268,37 @@ export default function Home() {
         🔄 New Game
       </button>
 
-      {/* ────────────────────── LEADERBOARD UI ────────────────────── */}
+      {/* ────────────────────── TWO LEADERBOARDS UI ────────────────────── */}
       <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        gap: '40px',
         margin: '30px auto',
-        padding: '20px',
-        border: '1px solid rgba(255,255,255,0.1)',
-        borderRadius: '12px',
-        maxWidth: '400px',
-        background: 'rgba(0,0,0,0.5)'
+        maxWidth: '900px'
       }}>
-        <h3 style={{ margin: '0 0 15px', fontSize: '1.8rem', color: '#00ffea' }}>
-          🏆 Leaderboard (Player X)
-        </h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
-          <StatBox label="Wins" value={leaderboard.wins} color="#ff4757" />
-          <StatBox label="Losses" value={leaderboard.losses} color="#3742fa" />
-          <StatBox label="Ties" value={leaderboard.ties} color="#ffa502" />
-          <StatBox label="Win Rate" value={leaderboard.winRate} color="#00ffea" />
-        </div>
-        <p style={{ marginTop: '15px', fontSize: '1rem', opacity: 0.8 }}>
-          Total Games: {leaderboard.totalGames}
-        </p>
-        <button
-          onClick={resetLeaderboard}
-          style={{
-            marginTop: '15px',
-            padding: '8px 20px',
-            background: 'none',
-            border: '1px solid #ff4757',
-            color: '#ff4757',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            fontSize: '0.9rem'
-          }}
-        >
-          Reset Stats
-        </button>
+        {/* Leaderboard for Player X */}
+        <LeaderboardCard player="X" stats={leaderboardX} color="#ff4757" />
+
+        {/* Leaderboard for Player O */}
+        <LeaderboardCard player="O" stats={leaderboardO} color="#3742fa" />
       </div>
-      {/* ──────────────────────────────────────────────────────────── */}
+
+      <button
+        onClick={resetLeaderboards}
+        style={{
+          marginTop: '10px',
+          padding: '8px 20px',
+          background: 'none',
+          border: '1px solid #ff4757',
+          color: '#ff4757',
+          borderRadius: '5px',
+          cursor: 'pointer',
+          fontSize: '0.9rem'
+        }}
+      >
+        Reset Both Stats
+      </button>
+      {/* ───────────────────────────────────────────────────────────────── */}
 
       <p style={{
         marginTop: '60px',
@@ -265,21 +307,32 @@ export default function Home() {
         fontStyle: 'italic'
       }}>
         Built live for Linera Buildathon ⚡<br />
-        Play vs friend (share screen) or AI-style turns
+        Play vs friend (share screen)
       </p>
     </div>
   )
 }
 
-// Helper component for Leaderboard stats
-const StatBox = ({ label, value, color }) => (
+// New component to render a single leaderboard card
+const LeaderboardCard = ({ player, stats, color }) => (
   <div style={{
-    padding: '8px',
-    border: `1px solid ${color}80`,
-    borderRadius: '8px',
-    backgroundColor: `${color}10`
+    padding: '20px',
+    border: '1px solid rgba(255,255,255,0.1)',
+    borderRadius: '12px',
+    maxWidth: '400px',
+    background: 'rgba(0,0,0,0.5)'
   }}>
-    <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color }}>{value}</div>
-    <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>{label}</div>
+    <h3 style={{ margin: '0 0 15px', fontSize: '1.8rem', color: color }}>
+      🏆 Leaderboard (Player {player})
+    </h3>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+      <StatBox label="Wins" value={stats.wins} color={color} />
+      <StatBox label="Losses" value={stats.losses} color={color === '#ff4757' ? '#3742fa' : '#ff4757'} />
+      <StatBox label="Ties" value={stats.ties} color="#ffa502" />
+      <StatBox label="Win Rate" value={stats.winRate} color="#00ffea" />
+    </div>
+    <p style={{ marginTop: '15px', fontSize: '1rem', opacity: 0.8 }}>
+      Total Games: {stats.totalGames}
+    </p>
   </div>
-)
+);
