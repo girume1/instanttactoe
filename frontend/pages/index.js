@@ -196,10 +196,7 @@ export default function Home() {
       
       {/* ────────────────────── LINERA LOGO WITH ANIMATION ────────────────────── */}
       <div style={{margin:'40px auto 20px'}}>
-        <img 
-          // FIX: The src attribute is corrected, pointing to the file in your repository.
-          src="/linera-logo.png" 
-          alt="Linera Buildathon" 
+        <img src="linera-logo.png" class="logo-photo"  alt="Linera Buildathon">
           style={{
             width: '140px',
             height: '140px',
