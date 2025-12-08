@@ -60,6 +60,6 @@ This project requires **Node.js** and **npm** (or yarn/pnpm).
 **Category:** Games
 **Submission Status:** 4th Wave Grant Submission
 
-Built live in the final 30 minutes of the Linera Buildathon by **@girume1** with the help of a clutch AI co-pilot.
+Built live in the final 30 minutes of the Linera Buildathon by **@girume1** 
 
 **The goal is to prove real-time blockchain gaming is here TODAY.**
