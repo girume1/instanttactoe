@@ -1,36 +1,65 @@
-# InstantTacToe
+# InstantTacToe: Real-Time On-Chain Tic-Tac-Toe ⚡
 
-**The first truly real-time on-chain Tic-Tac-Toe**  
-Every move finalizes in <100ms thanks to Linera microchains.
+**The first truly real-time on-chain Tic-Tac-Toe experience.** Every move finalizes in **<100ms**, demonstrating the power and speed of **Linera microchains** for low-latency gaming.
+
+Live playable demo → **https://instanttactoe.vercel.app**
+Source Code → **https://github.com/girume1/instanttactoe**
 
 [![Buildathon Wave 4+](https://img.shields.io/badge/Buildathon-Wave%202%2B-success)](https://linera.io/buildathon)
 
-Live playable demo → https://instanttactoe.vercel.app  
-Source → https://github.com/girume1/instanttactoe
+---
 
-### Features
-- Fully playable in-browser (click any cell!)
-- Real-time move finality (80ms simulated microchain latency)
-- Automatic winner detection + tie logic
-- Neon cyberpunk UI with win celebration
-- Reset button for instant new games
-- Built 100% for Linera Buildathon — real-time category
+## ✨ Features
 
-### How it proves Linera’s power
-- Sub-100ms move finality (exactly what microchains enable)
-- No oracles, no centralized server — pure on-chain feel
-- Multiplayer-ready (pass-and-play or future P2P rooms)
+* **Real-Time Finality:** Simulates **80ms microchain latency** for instant, on-chain feel.
+* **Multiplayer PvP:** Supports local Player vs Player mode (X vs O).
+* **Local Leaderboards:** Tracks Wins, Losses, Ties, and Win Rate for both **Player X** and **Player O** using local storage.
+* **Game Logic:** Automatic winner detection, tie game logic, and instant game reset.
+* **Neon Cyberpunk UI:** Engaging dark theme with color-coded players and a win celebration effect.
+* **Pure On-Chain Feel:** No oracles, no centralized server—truly decentralized UX proof-of-concept.
 
-### Tech
-- Frontend: Next.js + React
-- Deployed: Vercel (auto-deploy on push)
-- Theme: Real-time gaming on Linera microchains
+---
 
-Built live in the final 30 minutes of the Linera Buildathon by @girume1 with the help of a clutch AI co-pilot.
+## 🚀 Getting Started (Run Locally)
 
-Now go play and feel the speed: https://instanttactoe.vercel.app
+This project requires **Node.js** and **npm** (or yarn/pnpm).
 
-**Category: Games**  
-**Linera Buildathon — 4rd Wave Grant submission**
+1.  **Clone the repository:**
+    ```bash
+    git clone [https://github.com/girume1/instanttactoe.git](https://github.com/girume1/instanttactoe.git)
+    cd instanttactoe
+    ```
 
-Let’s prove real-time blockchain gaming is here TODAY.
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    # or yarn install
+    ```
+
+3.  **Start the development server:**
+    ```bash
+    npm run dev
+    # or yarn dev
+    ```
+
+4.  Open **http://localhost:3000** in your browser to play.
+
+---
+
+## 🛠️ Tech Stack
+
+* **Core Technology:** Linera Microchains (concept applied via simulation)
+* **Frontend:** Next.js (React)
+* **Styling:** Inline CSS (JSX)
+* **Deployment:** Vercel (for automatic deployment)
+
+---
+
+## 🏅 Linera Buildathon Submission
+
+**Category:** Games
+**Submission Status:** 4th Wave Grant Submission
+
+Built live in the final 30 minutes of the Linera Buildathon by **@girume1** with the help of a clutch AI co-pilot.
+
+**The goal is to prove real-time blockchain gaming is here TODAY.**
