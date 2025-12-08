@@ -37,8 +37,8 @@ export default function Home() {
     if (winner) {
       setLeaderboard(prev => {
         const total = prev.totalGames + 1
-        let wins = prev.X Wins
-        let losses = prev.O Wins
+        let wins = prev.wins
+        let losses = prev.losses
         let ties = prev.ties
 
         // Assuming the user playing is 'X' and 'O' is the opponent.
@@ -265,7 +265,7 @@ export default function Home() {
         fontStyle: 'italic'
       }}>
         Built live for Linera Buildathon ⚡<br />
-        Play vs friend (share screen) 
+        Play vs friend (share screen) or AI-style turns
       </p>
     </div>
   )
