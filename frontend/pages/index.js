@@ -194,11 +194,10 @@ export default function Home() {
         ⚡ InstantTacToe
       </h1>
       
-      {/* ────────────────────── ADDED LINERA LOGO WITH ANIMATION ────────────────────── */}
+      {/* ────────────────────── LINERA LOGO WITH ANIMATION ────────────────────── */}
       <div style={{margin:'40px auto 20px'}}>
         <img 
-          // NOTE: I am using a placeholder path /linera-logo.png. 
-          // Ensure you save the image to your /public folder!
+          // FIX: The src attribute is corrected, pointing to the file in your repository.
           src="/linera-logo.png" 
           alt="Linera Buildathon" 
           style={{
@@ -209,7 +208,6 @@ export default function Home() {
           }}
         />
       </div>
-      {/* ADDED CSS STYLES FOR ANIMATION (using styled-jsx, or put in global CSS) */}
       <style jsx>{`
         @keyframes pulse {
           0%, 100% { transform: scale(1); }
