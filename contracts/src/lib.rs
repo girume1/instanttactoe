@@ -1,6 +1,8 @@
 use linera_sdk::base::ContractAbi;
 use serde::{Deserialize, Serialize};
 
+pub mod state;
+
 pub struct TicTacToeAbi;
 
 impl ContractAbi for TicTacToeAbi {
@@ -8,7 +10,7 @@ impl ContractAbi for TicTacToeAbi {
     type Response = Result<Option<char>, String>;
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum Query {
     GetBoard,
 }
