@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug)]
 pub enum Operation {
     MakeMove { position: u8 },
+    ResetGame,
 }
 
 // Since the Frontend uses GraphQL to query the state directly through 
