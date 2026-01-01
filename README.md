@@ -2,7 +2,7 @@
 
 **The first truly real-time on-chain Tic-Tac-Toe experience.** Every move finalizes in **<100ms**, demonstrating the power and speed of **Linera microchains** for low-latency gaming.
 
-Live playable demo → **https://instanttactoe.vercel.app**
+Live playable demo →
 Source Code → **https://github.com/girume1/instanttactoe**
 
 [![Buildathon Wave 4+](https://img.shields.io/badge/Buildathon-Wave%204%2B-success)](https://linera.io/buildathon)
