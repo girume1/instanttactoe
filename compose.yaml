@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  builder:
+    build: .
+    volumes:
+      - .:/app
+    command: sleep infinity
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_LINERA_NODE_URL: "http://linera-service:8080/graphql"
+    depends_on:
+      - linera-service
+
+  linera-service:
+    build: .
+    ports:
+      - "8080:8080"
+      - "9001:9001"
+    volumes:
+      - linera-data:/data
+    command: >
+      sh -c "
+      cargo build --release --target wasm32-unknown-unknown --package game &&
+      linera wallet init &&
+      linera publish-module target/wasm32-unknown-unknown/release/game_contract.wasm target/wasm32-unknown-unknown/release/game_service.wasm &&
+      linera service
+      "
+
+volumes:
+  linera-data:
