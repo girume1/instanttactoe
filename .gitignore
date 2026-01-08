@@ -1,0 +1,11 @@
+/target/
+**/*.rs.bk
+Cargo.lock
+*.wasm
+.env
+.DS_Store
+node_modules/
+.next/
+*.log
+/data/
+/wallet.json
