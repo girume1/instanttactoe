@@ -5,67 +5,56 @@
 Live playable demo →
 Source Code → **https://github.com/girume1/instanttactoe**
 
-[![Buildathon Wave 4+](https://img.shields.io/badge/Buildathon-Wave%204%2B-success)](https://linera.io/buildathon)
+[![Buildathon Wave 5+](https://img.shields.io/badge/Buildathon-Wave%204%2B-success)](https://linera.io/buildathon)
 
 ---
+
+# ⚡ InstantTacToe
+
+[![Linera SDK](https://img.shields.io/badge/Linera-SDK-00ffea)](https://linera.io)
+[![Rust](https://img.shields.io/badge/Rust-1.86+-orange)](https://rust-lang.org)
+[![WASM](https://img.shields.io/badge/WASM-wasm32--unknown--unknown-blue)](https://webassembly.org)
+
+**Real-time multiplayer Tic-Tac-Toe on Linera microchains with sub-100ms finality illusion.**
+
+> Built for the Linera Buildathon • Neon Cyberpunk UI • On-chain game state
+
+## 🎮 Live Demo
+
+**Testnet Conway Deployment:**
+- **Application ID**: `902e6b5dfdcc1b6dfc7c69a05f927e0e49e207b7dc91d93f9b7b2ea834f8bf43`
+- **Chain ID**: `e58f07456a370b3795111aad36c2f359aaf25d60b80dff7b338ef14445147c2e`
+- **GraphQL Endpoint**: `http://localhost:8080/chains/e58f07456a370b3795111aad36c2f359aaf25d60b80dff7b338ef14445147c2e/applications/902e6b5dfdcc1b6dfc7c69a05f927e0e49e207b7dc91d93f9b7b2ea834f8bf43`
 
 ## ✨ Features
 
-* **Real-Time Finality:** Simulates **80ms microchain latency** for instant, on-chain feel.
-* **Multiplayer PvP:** Supports local Player vs Player mode (X vs O).
-* **Local Leaderboards:** Tracks Wins, Losses, Ties, and Win Rate for both **Player X** and **Player O** using local storage.
-* **Game Logic:** Automatic winner detection, tie game logic, and instant game reset.
-* **Neon Cyberpunk UI:** Engaging dark theme with color-coded players and a win celebration effect.
-* **Pure On-Chain Feel:** No oracles, no centralized server—truly decentralized UX proof-of-concept.
+✅ **Real-time Gameplay** - Sub-100ms finality illusion  
+✅ **Multiplayer** - Join system with turn validation  
+✅ **On-chain State** - Full game state on Linera microchains  
+✅ **Neon Cyberpunk UI** - Responsive, modern interface  
+✅ **GraphQL API** - Complete query interface  
+✅ **Linera SDK 0.15.8** - Full SDK compliance  
 
----
-## ⚠️ Recommended Playing Mode
+## 🚀 Quick Start
 
-For the best experience:
-* **Use a PC or Laptop.**
-* If you are on a **phone or tablet**, please select your browser's **"Desktop Site"** or **"Desktop Mode"** option to ensure accurate click detection and board scaling.
----
+### Prerequisites
+- [Rust](https://rustup.rs/) (1.86+)
+- [Linera CLI](https://linera.io/docs/getting-started)
+- [Node.js](https://nodejs.org/) (18+)
+- [Git](https://git-scm.com/)
 
-## 🚀 Getting Started (Run Locally)
+### Installation
 
-This project requires **Node.js** and **npm** (or yarn/pnpm).
+```bash
+# 1. Clone repository
+git clone https://github.com/yourusername/instanttactoe.git
+cd instanttactoe
 
-1.  **Clone the repository:**
-    ```bash
-    git clone [https://github.com/girume1/instanttactoe.git](https://github.com/girume1/instanttactoe.git)
-    cd instanttactoe
-    ```
+# 2. Build WASM contracts
+cargo build --release --target wasm32-unknown-unknown --package game
 
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    # or yarn install
-    ```
+# 3. Initialize Linera wallet
+linera wallet init --faucet https://faucet.testnet-conway.linera.net
 
-3.  **Start the development server:**
-    ```bash
-    npm run dev
-    # or yarn dev
-    ```
-
-4.  Open **http://localhost:3000** in your browser to play.
-
----
-
-## 🛠️ Tech Stack
-
-* **Core Technology:** Linera Microchains (concept applied via simulation)
-* **Frontend:** Next.js (React)
-* **Styling:** Inline CSS (JSX)
-* **Deployment:** Vercel (for automatic deployment)
-
----
-
-## 🏅 Linera Buildathon Submission
-
-**Category:** Games
-**Submission Status:** 4th Wave Grant Submission
-
-Built live in the final 30 minutes of the Linera Buildathon by **@girume1** 
-
-**The goal is to prove real-time blockchain gaming is here TODAY.**
+# 4. Deploy to Testnet Conway
+./deploy.sh
