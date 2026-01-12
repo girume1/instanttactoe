@@ -39,10 +39,10 @@ export default function Home() {
   const [leaderboardO, setLeaderboardO] = useState(initialStats)
 
   // Configuration
-  const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID || 'e58f07456a370b3795111aad36c2f359aaf25d60b80dff7b338ef14445147c2e'
-  const APP_ID = process.env.NEXT_PUBLIC_APP_ID || '902e6b5dfdcc1b6dfc7c69a05f927e0e49e207b7dc91d93f9b7b2ea834f8bf43'
-  const BASE_URL = process.env.NEXT_PUBLIC_LINERA_NODE_URL || 'http://localhost:8080'
-  const GRAPHQL_URL = `${BASE_URL}/chains/${CHAIN_ID}/applications/${APP_ID}`
+  const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID || ""
+  const APP_ID = process.env.NEXT_PUBLIC_APP_ID || ""
+  const NODE_URL = process.env.NEXT_PUBLIC_LINERA_NODE_URL || "http://localhost:8080"
+  const GRAPHQL_URL = `${NODE_URL}/chains/${CHAIN_ID}/applications/${APP_ID}`
 
   // GraphQL helper
   const graphqlRequest = async (query, variables = {}) => {
