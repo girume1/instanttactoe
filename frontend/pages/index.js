@@ -358,7 +358,7 @@ export default function Home() {
         
         <div style={{ marginTop: '10px', padding: '10px', background: '#222', borderRadius: '8px' }}>
           <p style={{ margin: '0', fontSize: '0.9rem' }}>
-            GraphQL Endpoint: <code style={{ color: '#ff00ea' }}>{BASE_URL}/chains/{CHAIN_ID.substring(0, 8)}.../applications/{APP_ID.substring(0, 8)}...</code>
+            GraphQL Endpoint: <code style={{ color: '#ff00ea' }}>{NODE_URL}/chains/{CHAIN_ID.substring(0, 8)}.../applications/{APP_ID.substring(0, 8)}...</code>
           </p>
         </div>
       </div>
