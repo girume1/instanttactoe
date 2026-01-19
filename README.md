@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="frontend/public/logo.png" width="500">
+</p>
+
 # InstantTacToe: Real-Time On-Chain Tic-Tac-Toe ⚡
 
 **The first truly real-time on-chain Tic-Tac-Toe experience.** Every move finalizes in **<100ms**, demonstrating the power and speed of **Linera microchains** for low-latency gaming.
