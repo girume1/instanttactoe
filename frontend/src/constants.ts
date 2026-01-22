@@ -1,0 +1,7 @@
+export const LINERA_RPC_URL = "https://faucet.testnet-conway.linera.net/";
+
+// REPLACE WITH YOUR ACTUAL APPLICATION ID FROM DEPLOYMENT
+export const GAME_APP_ID = "50c1f5b6fb7c2a72da264d11d3f874c3666b8e6d1cc6bb1d2ac48c8214e8d234";
+
+// REPLACE WITH YOUR ACTUAL CHAIN ID FROM DEPLOYMENT
+export const CHAIN_ID = "74a81927acd5c0048a05bdb206ce6252b29a4d3c423fbcfae8e32d0a30c3d88f";
