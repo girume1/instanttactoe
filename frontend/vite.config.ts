@@ -5,6 +5,7 @@ import path from 'path'
 export default defineConfig({
   base: '',
   server: {
+    port: 3000,  // Changed from default 5173
     headers: {
       'Cross-Origin-Opener-Policy': 'same-origin',
       'Cross-Origin-Embedder-Policy': 'credentialless',
@@ -13,7 +14,6 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      // VERY IMPORTANT: force ONLY your index.html as entry
       input: path.resolve(__dirname, 'index.html'),
       external: ['@linera/client'],
     },
