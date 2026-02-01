@@ -5,15 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npx tsc -b && vite build",
+    "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
     "@dynamic-labs/ethereum": "^3.9.13",
     "@dynamic-labs/sdk-react-core": "^3.9.13",
-    "@linera/client": "0.15.10",
-    "@linera/metamask": "0.15.10",
+    "@linera/client": "0.15.8",
+    "@linera/metamask": "0.15.8",
     "@linera/signer": "0.15.6",
     "@turnkey/api-key-stamper": "^0.6.0",
     "clsx": "^2.1.1",
