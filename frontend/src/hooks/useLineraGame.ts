@@ -1,3 +1,4 @@
+// src/hooks/useLineraGame.ts
 import { useState, useEffect, useCallback } from 'react';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { lineraAdapter } from '../utils/linera-adapter';
@@ -6,107 +7,146 @@ import toast from 'react-hot-toast';
 
 export const useLineraGame = () => {
   const { primaryWallet, user } = useDynamicContext();
+
   const [isConnected, setIsConnected] = useState(lineraAdapter.isChainConnected());
   const [isConnecting, setIsConnecting] = useState(false);
   const [address, setAddress] = useState<string | null>(lineraAdapter.address);
   const [balance, setBalance] = useState(0);
   const [nickname, setNickname] = useState('');
 
-  const loadInitialData = async () => {
+  // Loaded data from contract
+  const [lobby, setLobby] = useState<any[]>([]);
+  const [tournaments, setTournaments] = useState<any[]>([]);
+  const [guilds, setGuilds] = useState<any[]>([]);
+  const [isLoadingInitial, setIsLoadingInitial] = useState(false);
+
+  // Load lobby, tournaments, guilds on connect
+  const loadInitialData = useCallback(async () => {
+    if (!isConnected) return;
+
+    setIsLoadingInitial(true);
+
     try {
-      console.log("Loading initial data...");
-      // You can load tournaments, lobby, etc. here
+      // Load open games / lobby
+      const lobbyData = await lineraAdapter.queryApplication<any[]>({
+        type: 'GetLobby',
+      });
+      setLobby(lobbyData || []);
+      console.log("Lobby loaded:", lobbyData);
+
+      // Load active tournaments
+      const tournamentsData = await lineraAdapter.queryApplication<any[]>({
+        type: 'GetTournaments',
+      });
+      setTournaments(tournamentsData || []);
+      console.log("Tournaments loaded:", tournamentsData);
+
+      // Load available guilds
+      const guildsData = await lineraAdapter.queryApplication<any[]>({
+        type: 'GetGuilds',
+      });
+      setGuilds(guildsData || []);
+      console.log("Guilds loaded:", guildsData);
+
     } catch (error) {
       console.error("Failed to load initial data:", error);
+      toast.error("Could not load game data");
+    } finally {
+      setIsLoadingInitial(false);
     }
-  };
+  }, [isConnected]);
 
   const connectWallet = useCallback(async () => {
     if (isConnecting || isConnected) return;
     setIsConnecting(true);
-    try {
-      console.log("Connecting Linera game...");
 
+    try {
       if (!primaryWallet) {
-        console.warn("No primary wallet available");
-        toast.error('Please connect your wallet first');
+        toast.error("Please connect your wallet first");
         return;
       }
 
-      // Connect to Linera first to establish provider
       const provider = await lineraAdapter.connect(primaryWallet);
-      console.log("Linera connected:", provider.address);
-
-      // Then set application ID
       await lineraAdapter.setApplication();
-      console.log("Application set");
 
       setIsConnected(true);
       setAddress(provider.address);
 
-      // Get balance from the contract
-      try {
-        const currentBalance = await lineraAdapter.getBalance();
-        setBalance(currentBalance);
-        console.log("Balance:", currentBalance);
-      } catch (balanceError) {
-        console.log("Balance not available yet", balanceError);
-        setBalance(0);
-      }
+      const currentBalance = await lineraAdapter.getBalance().catch(() => 0);
+      setBalance(currentBalance);
 
-      toast.success('Connected to game!');
-
-      // Load initial data
-      setTimeout(() => {
-        loadInitialData();
-      }, 500);
+      toast.success("Connected to Linera!");
+      await loadInitialData();
     } catch (error: any) {
-      console.error('Failed to connect to Linera:', error);
-      toast.error(`Connection failed: ${error.message || 'Unknown error'}`);
+      console.error("Linera connection failed:", error);
+      toast.error(`Connection failed: ${error.message || "Unknown error"}`);
 
-      // Reset state on error
       setIsConnected(false);
       setAddress(null);
       setBalance(0);
     } finally {
       setIsConnecting(false);
     }
-  }, [primaryWallet, isConnecting, isConnected]);
+  }, [primaryWallet, isConnecting, isConnected, loadInitialData]);
 
   useEffect(() => {
-    if (user) {
-      setNickname(user.username || '');
+    if (primaryWallet && !isConnected && !isConnecting) {
+      connectWallet();
     }
-  }, [user]);
+  }, [primaryWallet, isConnected, isConnecting, connectWallet]);
 
   useEffect(() => {
     const syncFromAdapter = () => {
       const connected = lineraAdapter.isChainConnected();
       setIsConnected(connected);
       setAddress(lineraAdapter.address);
+
       if (!connected) {
         setBalance(0);
+        setNickname("");
+        setLobby([]);
+        setTournaments([]);
+        setGuilds([]);
       }
     };
 
     syncFromAdapter();
     lineraAdapter.onConnectionStateChange(syncFromAdapter);
+
     return () => {
       lineraAdapter.offConnectionStateChange();
     };
   }, []);
 
+  useEffect(() => {
+    if (user?.username) {
+      setNickname(user.username);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (!isConnected) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const newBalance = await lineraAdapter.getBalance();
+        setBalance(newBalance);
+      } catch {}
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [isConnected]);
+
   const setPlayerNickname = async (name: string) => {
     try {
-      const result = await lineraAdapter.executeOperation({
+      await lineraAdapter.executeOperation({
         type: 'SetNickname',
         name
       });
       setNickname(name);
       toast.success(`Nickname set to ${name}`);
-      return result;
-    } catch (error) {
-      toast.error('Failed to set nickname');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to set nickname');
       throw error;
     }
   };
@@ -123,6 +163,7 @@ export const useLineraGame = () => {
 
       const result = await lineraAdapter.executeOperation(operation);
       toast.success('Room created successfully!');
+      await loadInitialData(); // refresh lobby
       return result;
     } catch (error: any) {
       toast.error(error.message || 'Failed to create room');
@@ -138,9 +179,10 @@ export const useLineraGame = () => {
         password: password || null
       });
       toast.success('Joined room!');
+      await loadInitialData(); // refresh lobby
       return result;
-    } catch (error) {
-      toast.error('Failed to join room');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to join room');
       throw error;
     }
   };
@@ -153,16 +195,16 @@ export const useLineraGame = () => {
         position
       });
       return result;
-    } catch (error) {
-      toast.error('Move failed');
+    } catch (error: any) {
+      toast.error(error.message || 'Move failed');
       throw error;
     }
   };
 
   const getLobby = async (): Promise<any[]> => {
     try {
-      const res: any = await lineraAdapter.queryApplication({ type: 'GetLobby' });
-      return Array.isArray(res) ? (res as any[]) : [];
+      const res = await lineraAdapter.queryApplication({ type: 'GetLobby' });
+      return Array.isArray(res) ? res : [];
     } catch (error) {
       toast.error('Failed to fetch lobby');
       return [];
@@ -175,8 +217,6 @@ export const useLineraGame = () => {
         type: 'GetBoard',
         room_id: roomId
       });
-
-      // Ensure response is properly typed
       return response || null;
     } catch (error) {
       console.error('Failed to fetch game state:', error);
@@ -196,6 +236,7 @@ export const useLineraGame = () => {
         prize_distribution: [50, 30, 20]
       });
       toast.success('Tournament created!');
+      await loadInitialData(); // refresh tournaments
       return result;
     } catch (error) {
       toast.error('Failed to create tournament');
@@ -210,6 +251,7 @@ export const useLineraGame = () => {
         tournament_id: tournamentId
       });
       toast.success('Joined tournament!');
+      await loadInitialData(); // refresh tournaments
       return result;
     } catch (error) {
       toast.error('Failed to join tournament');
@@ -225,6 +267,7 @@ export const useLineraGame = () => {
         tag
       });
       toast.success('Guild created!');
+      await loadInitialData(); // refresh guilds
       return result;
     } catch (error) {
       toast.error('Failed to create guild');
@@ -237,14 +280,22 @@ export const useLineraGame = () => {
     setIsConnected(false);
     setAddress(null);
     setBalance(0);
+    setNickname('');
+    setLobby([]);
+    setTournaments([]);
+    setGuilds([]);
   };
 
   return {
     isConnected,
     isConnecting,
+    isLoadingInitial,
     address,
     balance,
     nickname,
+    lobby,
+    tournaments,
+    guilds,
     connectWallet,
     disconnectWallet,
     setPlayerNickname,
