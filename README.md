@@ -23,12 +23,7 @@ Source Code → **https://github.com/girume1/instanttactoe**
 
 > Built for the Linera Buildathon • Neon Cyberpunk UI • On-chain game state
 
-## 🎮 Live Demo
 
-**Testnet Conway Deployment:**
-- **Application ID**: `902e6b5dfdcc1b6dfc7c69a05f927e0e49e207b7dc91d93f9b7b2ea834f8bf43`
-- **Chain ID**: `e58f07456a370b3795111aad36c2f359aaf25d60b80dff7b338ef14445147c2e`
-- **GraphQL Endpoint**: `http://localhost:8080/chains/e58f07456a370b3795111aad36c2f359aaf25d60b80dff7b338ef14445147c2e/applications/902e6b5dfdcc1b6dfc7c69a05f927e0e49e207b7dc91d93f9b7b2ea834f8bf43`
 
 ## ✨ Features
 
