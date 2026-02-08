@@ -213,30 +213,5 @@ echo "  3. Open http://localhost:3000"
 echo ""
 echo "🔗 GraphQL: http://localhost:8080/chains/<chain-id>/applications/$APP_ID"
 ```
-# package.json (for frontend automation):
-```
-{
-  "name": "instanttactoe-frontend",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "deploy": "cd .. && ./deploy.sh"
-  },
-  "dependencies": {
-    "next": "^14.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
-  "devDependencies": {
-    "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.32",
-    "tailwindcss": "^3.3.6"
-  }
-}
-```
 
 ## Built with ❤️ on Linera ##
