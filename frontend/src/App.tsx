@@ -7,6 +7,7 @@ import { AnimatePresence } from "framer-motion";
 // Dynamic Labs imports
 import { DynamicContextProvider } from "@dynamic-labs/sdk-react-core";
 import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
+import { DYNAMIC_ENVIRONMENT_ID } from "./constants";
 
 // Components
 import { Navigation } from "./components/Navigation";
@@ -83,7 +84,7 @@ function App() {
   return (
     <DynamicContextProvider
       settings={{
-        environmentId: (import.meta as any).env.VITE_DYNAMIC_ENVIRONMENT_ID,
+        environmentId: DYNAMIC_ENVIRONMENT_ID,
         walletConnectors: [EthereumWalletConnectors],
 
         eventsCallbacks: {
