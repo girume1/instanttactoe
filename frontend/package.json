@@ -15,7 +15,6 @@
     "@linera/client": "0.15.10",
     "@linera/metamask": "0.15.10",
     "@linera/signer": "0.15.6",
-    "@turnkey/api-key-stamper": "^0.6.0",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
     "framer-motion": "^11.11.9",
